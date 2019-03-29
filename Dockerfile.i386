@@ -8,7 +8,7 @@ RUN ln -s /usr/local/go/bin/go /usr/local/bin/go \
  && mkdir -p ~/go/src/gitlab.com/gitlab-org/gitlab-runner/ \
  && git clone -b master https://gitlab.com/gitlab-org/gitlab-runner.git ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
  && cd ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
- && GOOS=linux GOARCH=386 go build
+ && GOOS=linux GOARCH=386 go build -ldflags "-X gitlab.com/gitlab-org/gitlab-runner/common.NAME=gitlab-runner -X gitlab.com/gitlab-org/gitlab-runner/common.VERSION=$(cat VERSION) -X gitlab.com/gitlab-org/gitlab-runner/common.REVISION=$(git rev-parse --short=8 HEAD || echo unknown) -X gitlab.com/gitlab-org/gitlab-runner/common.BUILT=$(date -u +%Y-%m-%dT%H:%M:%S%z) -s -w"
 
 FROM busybox:glibc AS user-builder
 
