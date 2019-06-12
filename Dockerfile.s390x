@@ -1,23 +1,23 @@
-FROM debian:stretch-slim AS gitlab-runner-builder
+FROM debian:9.8-slim AS gitlab-runner-builder
 
-COPY --from=golang:stretch /usr/local/go /usr/local/go
+COPY --from=golang:1.12 /usr/local/go /usr/local/go
 
 RUN ln -s /usr/local/go/bin/go /usr/local/bin/go \
  && apt-get update \
- && apt-get -y install git \
+ && apt-get -y install git gcc \
  && mkdir -p ~/go/src/gitlab.com/gitlab-org/gitlab-runner/ \
- && git clone -b master https://gitlab.com/gitlab-org/gitlab-runner.git ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
+ && git clone -b v12.0.0-rc1 https://gitlab.com/gitlab-org/gitlab-runner.git ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
  && cd ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
  && GOOS=linux GOARCH=s390x go build -ldflags "-X gitlab.com/gitlab-org/gitlab-runner/common.NAME=gitlab-runner -X gitlab.com/gitlab-org/gitlab-runner/common.VERSION=$(cat VERSION) -X gitlab.com/gitlab-org/gitlab-runner/common.REVISION=$(git rev-parse --short=8 HEAD || echo unknown) -X gitlab.com/gitlab-org/gitlab-runner/common.BUILT=$(date -u +%Y-%m-%dT%H:%M:%S%z) -s -w"
 
-FROM busybox:glibc AS user-builder
+FROM busybox:1.30-glibc AS user-builder
 
 RUN addgroup -g 201 -S gitlab-runner \
  && adduser -G gitlab-runner -s /bin/false -S -D -u 201 gitlab-runner \
  && mkdir -p /etc/gitlab-runner \
  && touch /etc/gitlab-runner/config.toml
 
-FROM s390x/busybox:glibc
+FROM s390x/busybox:1.30-glibc
 
 COPY --from=user-builder /etc/passwd /etc/passwd
 COPY --from=user-builder /etc/group /etc/group
