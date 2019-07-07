@@ -6,7 +6,7 @@ RUN ln -s /usr/local/go/bin/go /usr/local/bin/go \
  && apt-get update \
  && apt-get -y install git gcc \
  && mkdir -p ~/go/src/gitlab.com/gitlab-org/gitlab-runner/ \
- && git clone -b v11.11.4 https://gitlab.com/gitlab-org/gitlab-runner.git ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
+ && git clone -b v12.0.2 https://gitlab.com/gitlab-org/gitlab-runner.git ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
  && cd ~/go/src/gitlab.com/gitlab-org/gitlab-runner \
  && GOOS=linux GOARCH=amd64 go build -ldflags "-X gitlab.com/gitlab-org/gitlab-runner/common.NAME=gitlab-runner -X gitlab.com/gitlab-org/gitlab-runner/common.VERSION=$(cat VERSION) -X gitlab.com/gitlab-org/gitlab-runner/common.REVISION=$(git rev-parse --short=8 HEAD || echo unknown) -X gitlab.com/gitlab-org/gitlab-runner/common.BUILT=$(date -u +%Y-%m-%dT%H:%M:%S%z) -s -w"
 
